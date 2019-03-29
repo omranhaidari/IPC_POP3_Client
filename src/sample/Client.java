@@ -29,40 +29,31 @@ public class Client {
             inStream = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             outStream = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             response = inStream.readLine();
-            System.out.println(response);
+            System.out.println("S: " + response);
+            System.out.println("Connection setup...");
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            System.out.println("Connection setup...");
         }
     }
 
-    private void login(String user, String password) throws Exception {
-        sendRequest("USER " + user + "\r\n");
+    public void login(String user, String password) throws Exception {
+        sendRequest("APOP " + user + " " + password);
         try {
             response = inStream.readLine();
             if (!response.startsWith("+OK")) {
-                throw new Exception("Error responsed fron server: Username Dennied!");
-            } else {
-                System.out.println("S: " + response);
-            }
-            sendRequest("PASS " + password + "\r\n");
-            response = inStream.readLine();
-            if (!response.startsWith("+OK")) {
-                throw new Exception("Error responsed from server: Password Dennied!");
+                throw new Exception("Error server responded: Username Denied!");
             } else {
                 System.out.println("S: " + response);
                 File dir = new File(directory);
                 dir.mkdir();
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void logout() throws IOException {
-        sendRequest("QUIT\r\n");
+    public void logout() throws IOException {
+        sendRequest("QUIT");
         response = inStream.readLine();
         System.out.println("S: " + response);
         System.out.println("pop3Client logged out!");
@@ -71,12 +62,50 @@ public class Client {
         System.out.println("Connection closed with host");
         inStream.close();
         outStream.close();
+    }
 
+    public void retrieveMails() throws IOException {
+        sendRequest("STAT");
+        String response;
+        try {
+            response = inStream.readLine();
+            System.out.println("S: " + response);
+            numberOfMail = Integer.parseInt(response.split(" ")[1]);
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+
+        for (int i = 1; i <= numberOfMail; i++) {
+            sendRequest("RETR " + i);
+            String path = i + ".txt";
+
+            File f = new File(directory, path);
+
+            f.createNewFile();
+
+            FileWriter fw = new FileWriter(f);
+            BufferedWriter writer = new BufferedWriter(fw);
+
+            String line;
+            while (!(line = inStream.readLine()).equals(".")) {
+                if(line.startsWith("+OK")) {
+                    continue;
+                }
+
+                System.out.println(line);
+                writer.write(line);
+                writer.newLine();
+                writer.flush();
+            }
+
+            writer.close();
+            fw.close();
+        }
     }
 
     private void sendRequest(String string) {
         try {
-            outStream.write(string);
+            outStream.write(string + "\r\n");
             outStream.flush();
             System.out.println("C: " + string.trim());
         } catch (IOException e) {
@@ -84,63 +113,12 @@ public class Client {
         }
     }
 
-    private void retrieveMails() throws IOException {
-        Queue<String> queue = new LinkedList<String>();
-        sendRequest("LIST\r\n");
-        String firstLine;
-        String line;
-        try {
-            while (!(line = inStream.readLine()).equals(".")) {
-                queue.add(line);
-            }
-            firstLine = queue.poll();
-            System.out.println("S: " + firstLine);
-            numberOfMail = Integer.parseInt(firstLine.split(" ")[1]);
-            queue.clear();
-
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
-        for (int i = 1; i <= numberOfMail; i++) {
-            sendRequest("RETR " + i + "\r\n");
-            String path = i + ".txt";
-
-            File f = new File(directory, path);
-
-            f.createNewFile();
-
-            FileWriter fw = null;
-            BufferedWriter writer = null;
-
-            fw = new FileWriter(f);
-            writer = new BufferedWriter(fw);
-
-            while (!(line = inStream.readLine()).equals(".")) {
-                writer.write(line);
-                writer.newLine();
-                writer.flush();
-            }
-            writer.close();
-            fw.close();
-        }
-
-        for (int i = 1; i <= numberOfMail; i++) {
-            sendRequest("DELE " + i + "\r\n");
-            try {
-                System.out.println("S: " + inStream.readLine());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-    }
-
     public static void main(String[] args) throws Exception {
 
-        int port = 4567;
+        int port = 8025;
         String host = "localhost";
-        String user = "user";
-        String password = "userpwd";
+        String user = "john";
+        String password = "passjohn";
         Client pop3Client = new Client(host, port);
 
         pop3Client.login(user, password);
