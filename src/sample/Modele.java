@@ -11,7 +11,7 @@ public class Modele extends Observable {
     private String userNameLogedIn;
 
     public Modele() throws IOException {
-        this.client = new Client("localhost", 8025);
+
     }
 
     public String getUserNameLogedIn() {
@@ -24,6 +24,7 @@ public class Modele extends Observable {
     }
 
     public void connexion(String user, String password) throws Exception {
+        this.client = new Client("localhost", 8025);
         client.login(user, password);
         setUserNameLogedIn(user);
     }

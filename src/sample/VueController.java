@@ -23,7 +23,7 @@ public class VueController extends Application {
     private Modele modele;
 
     private BorderPane root;
-    private GridPane connexion;
+    private GridPane connexionGrille;
     private GridPane listMails;
 
 
@@ -60,43 +60,43 @@ public class VueController extends Application {
         retrieve.setOnAction(event -> retrieveMails());
         root.setLeft(hbBtnRetrieve);
 
-        // espace connexion (barre du haut)
-        connexion = new GridPane();
+        // espace connexionGrille (barre du haut)
+        connexionGrille = new GridPane();
         userNameLogedIn = new Text("");
 
-        connexion.setAlignment(Pos.TOP_LEFT);
-        connexion.setHgap(20);
-        connexion.setPadding(new Insets(5, 0, 0, 25));
+        connexionGrille.setAlignment(Pos.TOP_LEFT);
+        connexionGrille.setHgap(20);
+        connexionGrille.setPadding(new Insets(5, 0, 0, 25));
 
         Label userName = new Label("Utilisateur :");
-        connexion.add(userName, 1, 0);
+        connexionGrille.add(userName, 1, 0);
 
         userTextField = new TextField();
-        connexion.add(userTextField, 2, 0);
+        connexionGrille.add(userTextField, 2, 0);
 
         Label pw = new Label("Mot de passe :");
-        connexion.add(pw, 4, 0);
+        connexionGrille.add(pw, 4, 0);
 
         passwordField = new PasswordField();
-        connexion.add(passwordField, 5, 0);
+        connexionGrille.add(passwordField, 5, 0);
 
         Button connexionbtn = new Button("Connexion");
         HBox hbBtnConnexion = new HBox(10);
         hbBtnConnexion.setAlignment(Pos.BOTTOM_RIGHT);
-        hbBtnConnexion.getChildren().add(connexion);
+        hbBtnConnexion.getChildren().add(connexionbtn);
         connexionbtn.setOnAction(event -> this.connexion());
-        connexion.add(hbBtnConnexion, 6, 0);
+        connexionGrille.add(hbBtnConnexion, 6, 0);
 
         GridPane.setHalignment(userNameLogedIn, HPos.RIGHT);
-        connexion.add(userNameLogedIn, 8, 0, 20, 1);
+        connexionGrille.add(userNameLogedIn, 8, 0, 20, 1);
 
         Button deconnexion = new Button("Deconnexion");
         HBox hbBtnDeconnexion = new HBox(10);
         hbBtnDeconnexion.setAlignment(Pos.BOTTOM_RIGHT);
         hbBtnDeconnexion.getChildren().add(deconnexion);
         deconnexion.setOnAction(event -> deconnexion());
-        this.connexion.add(deconnexion, 7, 0);
-        root.setTop(this.connexion);
+        connexionGrille.add(deconnexion, 7, 0);
+        root.setTop(this.connexionGrille);
 
 
         Scene scene = new Scene(root, 1500, 500);
@@ -132,6 +132,7 @@ public class VueController extends Application {
             userTextField.clear();
             List<String> mailsBody = new ArrayList<>();
             listMails = new GridPane();
+            // listMails.getChildren().clear();
             modele.setUserNameLogedIn("");
         } catch (Exception e) {
             e.printStackTrace();
