@@ -1,5 +1,6 @@
 package sample;
 
+import javax.net.ssl.SSLSocket;
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -10,6 +11,8 @@ import java.io.OutputStreamWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.regex.Matcher;
@@ -17,12 +20,13 @@ import java.util.regex.Pattern;
 
 public class Client {
 
-    private Socket socket;
-    private BufferedReader inStream = null;
-    private BufferedWriter outStream = null;
-    private String response;
-    private int numberOfMail;
-    private String directory = "receiver";
+    protected Socket socket;
+    protected BufferedReader inStream = null;
+    protected BufferedWriter outStream = null;
+    protected String response;
+    protected int numberOfMail;
+    protected String directory = "receiver";
+    protected String timeStamp = "";
 
     public Client(String host, int port) throws UnknownHostException, IOException {
         try {
@@ -33,7 +37,6 @@ public class Client {
             response = inStream.readLine();
             System.out.println("S: " + response);
             Matcher matcher = Pattern.compile("(<.*>)").matcher(response);
-            String timestamp = "";
             if(matcher.find()) {
                 timestamp = matcher.group();
             }
@@ -43,8 +46,18 @@ public class Client {
         }
     }
 
+    public Client() {
+    }
+
     public void login(String user, String password) throws Exception {
-        sendRequest("APOP " + user + " " + password);
+        String checksum;
+        try {
+            checksum = new String(MessageDigest.getInstance("MD5").digest((this.timeStamp + password).getBytes()));
+        } catch (NoSuchAlgorithmException e) {
+            System.err.println("Algorithm MD5 not found");
+            checksum = password;
+        }
+        sendRequest("APOP " + user + " " + checksum);
         try {
             response = inStream.readLine();
             if (!response.startsWith("+OK")) {
@@ -133,4 +146,7 @@ public class Client {
         pop3Client.logout();
     }
 
+    public int getNumberOfMail() {
+        return numberOfMail;
+    }
 }
