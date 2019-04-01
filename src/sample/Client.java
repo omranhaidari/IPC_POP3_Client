@@ -38,7 +38,7 @@ public class Client {
             System.out.println("S: " + response);
             Matcher matcher = Pattern.compile("(<.*>)").matcher(response);
             if(matcher.find()) {
-                timestamp = matcher.group();
+                timeStamp = matcher.group();
             }
             System.out.println("Connection setup...");
         } catch (Exception e) {
