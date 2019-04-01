@@ -15,6 +15,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Client {
 
@@ -24,7 +26,7 @@ public class Client {
     protected String response;
     protected int numberOfMail;
     protected String directory = "receiver";
-    protected String timeStamp;
+    protected String timeStamp = "";
 
     public Client(String host, int port) throws UnknownHostException, IOException {
         try {
@@ -34,7 +36,10 @@ public class Client {
             outStream = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             response = inStream.readLine();
             System.out.println("S: " + response);
-            timeStamp = "<" + response.split("<")[1].split(">")[0] + ">";
+            Matcher matcher = Pattern.compile("(<.*>)").matcher(response);
+            if(matcher.find()) {
+                timeStamp = matcher.group();
+            }
             System.out.println("Connection setup...");
         } catch (Exception e) {
             e.printStackTrace();
