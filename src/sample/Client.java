@@ -12,6 +12,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Client {
 
@@ -30,6 +32,11 @@ public class Client {
             outStream = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             response = inStream.readLine();
             System.out.println("S: " + response);
+            Matcher matcher = Pattern.compile("(<.*>)").matcher(response);
+            String timestamp = "";
+            if(matcher.find()) {
+                timestamp = matcher.group();
+            }
             System.out.println("Connection setup...");
         } catch (Exception e) {
             e.printStackTrace();
