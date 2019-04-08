@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
-public class Modele extends Observable {
+public class Modele {
 
     private Client client;
     private String userNameLogedIn;
@@ -20,18 +20,12 @@ public class Modele extends Observable {
 
     public void setUserNameLogedIn(String userNameLogedIn) {
         this.userNameLogedIn = userNameLogedIn;
-        notif();
     }
 
     public void connexion(String user, String password) throws Exception {
         this.client = new Client("localhost", 8025);
         client.login(user, password);
         setUserNameLogedIn(user);
-    }
-
-    public void notif() {
-        this.setChanged();
-        this.notifyObservers();
     }
 
     public List<String> getMails() {

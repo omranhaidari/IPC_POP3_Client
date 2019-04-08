@@ -35,14 +35,6 @@ public class VueController extends Application {
     public void start(Stage primaryStage) throws IOException {
 
         this.modele = new Modele();
-        this.modele.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                userNameLogedIn.setText("");
-                userTextField.clear();
-                passwordField.clear();
-            }
-        });
 
         root = new BorderPane();
 
@@ -128,12 +120,10 @@ public class VueController extends Application {
         try {
             modele.deconnexion();
             userNameLogedIn.setText("");
+            modele.setUserNameLogedIn("");
             passwordField.clear();
             userTextField.clear();
-            List<String> mailsBody = new ArrayList<>();
             listMails = new GridPane();
-            // listMails.getChildren().clear();
-            modele.setUserNameLogedIn("");
         } catch (Exception e) {
             e.printStackTrace();
         }
