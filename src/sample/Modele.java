@@ -24,7 +24,7 @@ public class Modele extends Observable {
     }
 
     public void connexion(String user, String password) throws Exception {
-        this.client = new Client("localhost", 8025);
+        this.client = new ClientSSL("localhost", 8043);
         client.login(user, password);
         setUserNameLogedIn(user);
     }
